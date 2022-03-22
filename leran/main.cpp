@@ -145,11 +145,13 @@ public:
 
 int main()
 {
-    Model h(2, 2);
+    Model h(10, 5);
+    h.addLayer(5);
+    h.addLayer(13);
+    h.addLayer(100);
     h.addLayer(2);
-    h.addLayer(2);
-    h.getShape();
+//    h.getShape();
     h.buildModel();
-    h.forwardPass({1, 2});
+    h.forwardPass({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
     return 0;
 }
