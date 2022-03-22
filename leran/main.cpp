@@ -84,5 +84,6 @@ int main()
 {
     Model h(5, 8);
     h.getShape();
+    std::cout << "Hello Git" << std::endl;
     return 0;
 }
