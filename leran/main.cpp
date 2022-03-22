@@ -145,7 +145,7 @@ public:
 
 int main()
 {
-    Model h(10, 5);
+    Model h(10, 20);
     h.addLayer(5);
     h.addLayer(13);
     h.addLayer(100);
