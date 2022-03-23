@@ -190,15 +190,14 @@ void print(T a, std::string end){
 
 int main()
 {
-    
-#ifdef __APPLE__
-//    char cwd[100000];
-//    getcwd(cwd, sizeof(cwd));
-    std::cout << __FILE__ << std::endl;
-#endif
-//    std::string filename;
-//    std::string mystring = readfile(filename);
-//    std::cout << mystring;
+    std::string p = __FILE__;
+    std::string path = "";
+    for (int i = 0; i < p.size() - 8; i++) {
+        path += p[i];
+    }
+    std::string filename = "input_train.txt";
+    std::string mystring = readfile(path + "data/" + filename);
+    std::cout << mystring;
     // Model h(20, 1);
     // h.addLayer(1);
     // h.getShape();
