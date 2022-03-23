@@ -166,25 +166,24 @@ void dataformat(std::vector<std::vector<long double>> &px){
 }
 
 // std::vector<std::vector<long double>>& readfile(std::string file_name){
-std::string& readfile(std::string file_name){
+std::string readfile(std::string file_name){
     std::vector<std::vector<long double>> matr;
-    std::fstream file;
+    std::ifstream file;
     file.open(file_name);
     std::string mystring;
-    if(file.is_open()){
-        file >> mystring;
+    if(!file){
+        print(file_name);
+        return "d";
     }
+    file >> mystring;
     std::cout << mystring;
-    std::string &stringRef = mystring;
-    return stringRef;
-
-
+    return mystring;
 }
 
 
 template <typename T>
 void print(T a, std::string end){
-    std::cout << a << end;
+    std::cout << a << std::endl;
 }
 
 // main
@@ -192,9 +191,9 @@ void print(T a, std::string end){
 int main()
 {
     std::string filename;
-    // std::cin >> filename;
-    std::string &stringRef = readfile("train_input.txt");
-    std::cout << stringRef;
+    filename = "in.txt";
+    std::string mystring = readfile(filename);
+    std::cout << mystring;
     // Model h(20, 1);
     // h.addLayer(1);
     // h.getShape();
