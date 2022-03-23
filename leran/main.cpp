@@ -162,6 +162,9 @@ std::vector<long double> normalize(std::vector<long double> in){
 }
 
 void dataformat(std::vector<std::vector<long double>> &px){
+    for (int i = 0; i < px.size(); i++){
+        
+    }
 }
 
 template <typename T>
@@ -177,7 +180,7 @@ int main()
     
     Model h(20, 1);
     h.addLayer(1);
-//    h.getShape();
+    h.getShape();
     h.buildModel();
     h.forwardPass({1});
     return 0;
