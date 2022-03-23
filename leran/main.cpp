@@ -161,6 +161,9 @@ std::vector<long double> normalize(std::vector<long double> in){
     return inp;
 }
 
+void dataformat(std::vector<std::vector<long double>> &px){
+}
+
 template <typename T>
 void print(T a, std::string end){
     std::cout << a << end;
