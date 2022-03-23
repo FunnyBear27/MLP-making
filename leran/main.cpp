@@ -3,28 +3,17 @@
 #include <vector>
 #include <math.h>
 #include <ctime>
-
-long double maxElem(std::vector<long double> inp){
-    long double m = inp[0];
-    for (int i = 1; i < (inp.size()); i++){
-        if (inp[i] > m){
-            m = inp[i];
-        }
-    }
-    return m;
-}
+#include <fstream>
 
 
-std::vector<long double> normalize(std::vector<long double> in){
-    std::vector<long double> inp = in;
-    long double maximum = maxElem(inp);
-    for (int i = 0; i < inp.size(); i++){
-        inp[i] = inp[i] / maximum;
-    }
-    return inp;
-}
+// Прототипы
+void dataformat(std::vector<std::vector<long double>> &px);
+std::vector<long double> normalize(std::vector<long double> in);
+long double maxElem(std::vector<long double> inp);
+template <typename T>
+void print(T a, std::string end = "\n");
 
-
+// Классы
 class Neuron{
 protected:
     std::vector<long double> in_weights;
@@ -35,7 +24,7 @@ public:
     Neuron(std::vector<long double> input_weights){
         in_weights = input_weights;
 //        for (int i = 0; i < in_weights.size(); i++) {
-//            std::cout << in_weights[i] << std::endl;
+            std::cout << in_weights[0] << std::endl;
 //        }
 //        std::cout << "\n\n";
     }
@@ -113,9 +102,14 @@ public:
             for (int i = 0; i < curr_in; i++){
                 weights.push_back(2 * (static_cast <long double> (rand()) / static_cast <long double> (RAND_MAX)) - 1);
             }
+            std::cout << weights[0] << std::endl;
             output_layer.push_back(OutputNeurons(weights));
             weights.clear();
         }
+    }
+    
+    void trainModel(std::vector <std::vector <long double>> input_vectors, std::vector <long double> output_vectors, int epochs, bool show_progress = true){
+        
     }
     
     void forwardPass(std::vector<long double> input_values){
@@ -133,7 +127,7 @@ public:
         std::cout << "                 RESULTS" << "\n\n";
         for (int n = 0; n < out_shape; n++) {
             result.push_back(output_layer[n].countValue(curr_input));
-            std::cout << output_layer[n].countValue(curr_input) << std::endl;
+            print(output_layer[n].countValue(curr_input));
         }
     }
     
@@ -142,16 +136,46 @@ public:
     }
 };
 
+// Функции
+
+
+
+
+long double maxElem(std::vector<long double> inp){
+    long double m = inp[0];
+    for (int i = 1; i < (inp.size()); i++){
+        if (inp[i] > m){
+            m = inp[i];
+        }
+    }
+    return m;
+}
+
+
+std::vector<long double> normalize(std::vector<long double> in){
+    std::vector<long double> inp = in;
+    long double maximum = maxElem(inp);
+    for (int i = 0; i < inp.size(); i++){
+        inp[i] = inp[i] / maximum;
+    }
+    return inp;
+}
+
+template <typename T>
+void print(T a, std::string end){
+    std::cout << a << end;
+}
+
+// main
 
 int main()
 {
-    Model h(10, 20);
-    h.addLayer(5);
-    h.addLayer(13);
-    h.addLayer(100);
-    h.addLayer(2);
+    std::vector<std::vector<long double>> input_data;
+    
+    Model h(20, 1);
+    h.addLayer(1);
 //    h.getShape();
     h.buildModel();
-    h.forwardPass({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+    h.forwardPass({1});
     return 0;
 }
