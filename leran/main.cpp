@@ -8,6 +8,7 @@
 
 // Прототипы
 void dataformat(std::vector<std::vector<long double>> &px);
+// std::vector<std::vector<long double>>& readfile(std::string file_name);
 std::vector<long double> normalize(std::vector<long double> in);
 long double maxElem(std::vector<long double> inp);
 template <typename T>
@@ -138,9 +139,6 @@ public:
 
 // Функции
 
-
-
-
 long double maxElem(std::vector<long double> inp){
     long double m = inp[0];
     for (int i = 1; i < (inp.size()); i++){
@@ -167,6 +165,23 @@ void dataformat(std::vector<std::vector<long double>> &px){
     }
 }
 
+// std::vector<std::vector<long double>>& readfile(std::string file_name){
+std::string& readfile(std::string file_name){
+    std::vector<std::vector<long double>> matr;
+    std::fstream file;
+    file.open(file_name);
+    std::string mystring;
+    if(file.is_open()){
+        file >> mystring;
+    }
+    std::cout << mystring;
+    std::string &stringRef = mystring;
+    return stringRef;
+
+
+}
+
+
 template <typename T>
 void print(T a, std::string end){
     std::cout << a << end;
@@ -176,12 +191,14 @@ void print(T a, std::string end){
 
 int main()
 {
-    std::vector<std::vector<long double>> input_data;
-    
-    Model h(20, 1);
-    h.addLayer(1);
-    h.getShape();
-    h.buildModel();
-    h.forwardPass({1});
+    std::string filename;
+    // std::cin >> filename;
+    std::string &stringRef = readfile("train_input.txt");
+    std::cout << stringRef;
+    // Model h(20, 1);
+    // h.addLayer(1);
+    // h.getShape();
+    // h.buildModel();
+    // h.forwardPass({1});
     return 0;
 }
