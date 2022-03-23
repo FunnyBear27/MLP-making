@@ -190,10 +190,15 @@ void print(T a, std::string end){
 
 int main()
 {
-    std::string filename;
-    filename = "in.txt";
-    std::string mystring = readfile(filename);
-    std::cout << mystring;
+    
+#ifdef __APPLE__
+//    char cwd[100000];
+//    getcwd(cwd, sizeof(cwd));
+    std::cout << __FILE__ << std::endl;
+#endif
+//    std::string filename;
+//    std::string mystring = readfile(filename);
+//    std::cout << mystring;
     // Model h(20, 1);
     // h.addLayer(1);
     // h.getShape();
