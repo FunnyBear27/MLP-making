@@ -126,6 +126,7 @@ public:
     std::vector<long double> forwardPass(std::vector<long double> input_values){
         std::vector<long double> input = minmax(input_values);
         std::vector<long double> curr_input = input;
+        
         for (int layer = 0; layer < layers_vect.size(); layer++) {
             std::vector<long double> new_input;
             for (int n = 0; n < layers_vect[layer].size(); n++) {
