@@ -2,17 +2,18 @@
 #include <algorithm>
 #include <vector>
 #include <math.h>
+#include <cmath>
 #include <ctime>
 #include <fstream>
 
 
 // Прототипы
-void dataformat(std::vector<std::vector<long double>> &px);
-// std::vector<std::vector<long double>>& readfile(std::string file_name);
-std::vector<long double> normalize(std::vector<long double> in);
+void readfile(std::string file_name, int input_shape, int output_shape, std::vector<long double>);
+std::vector<long double> minmax(std::vector<long double> in);
 long double maxElem(std::vector<long double> inp);
 template <typename T>
 void print(T a, std::string end = "\n");
+long double errorCalc(std::vector<long double> res, std::vector<long double> true_val);
 
 // Классы
 class Neuron{
@@ -25,7 +26,6 @@ public:
     Neuron(std::vector<long double> input_weights){
         in_weights = input_weights;
 //        for (int i = 0; i < in_weights.size(); i++) {
-            std::cout << in_weights[0] << std::endl;
 //        }
 //        std::cout << "\n\n";
     }
@@ -103,18 +103,28 @@ public:
             for (int i = 0; i < curr_in; i++){
                 weights.push_back(2 * (static_cast <long double> (rand()) / static_cast <long double> (RAND_MAX)) - 1);
             }
-            std::cout << weights[0] << std::endl;
             output_layer.push_back(OutputNeurons(weights));
             weights.clear();
         }
     }
     
-    void trainModel(std::vector <std::vector <long double>> input_vectors, std::vector <long double> output_vectors, int epochs, bool show_progress = true){
-        
+    long double trainModel(std::vector <std::vector<long double>> &input_vectors, std::vector <std::vector<long double>> &output_vectors, int epochs, bool show_progress = false){
+        long double error;
+        for(int epoch = 0; epoch < epochs; epoch++){
+            std::vector<long double> errors;
+            for (int i = 0; i < output_vectors.size(); i++){
+                std::vector<long double> res = forwardPass(input_vectors[i]);
+                error = errorCalc(res, output_vectors[i]);
+                errors.push_back(error);
+                std::cout << res[0] << "\t" << output_vectors[i][0] << "\n";
+            }
+            std::cout << "\n";
+        }
+        return 992.23;
     }
     
-    void forwardPass(std::vector<long double> input_values){
-        std::vector<long double> input = normalize(input_values);
+    std::vector<long double> forwardPass(std::vector<long double> input_values){
+        std::vector<long double> input = minmax(input_values);
         std::vector<long double> curr_input = input;
         for (int layer = 0; layer < layers_vect.size(); layer++) {
             std::vector<long double> new_input;
@@ -125,11 +135,10 @@ public:
             new_input.clear();
         }
         std::vector<long double> result;
-        std::cout << "                 RESULTS" << "\n\n";
         for (int n = 0; n < out_shape; n++) {
             result.push_back(output_layer[n].countValue(curr_input));
-            print(output_layer[n].countValue(curr_input));
         }
+        return result;
     }
     
     void getShape(){
@@ -149,59 +158,101 @@ long double maxElem(std::vector<long double> inp){
     return m;
 }
 
+long double minElem(std::vector<long double> inp){
+    long double m = inp[0];
+    for (int i = 1; i < (inp.size()); i++){
+        if (inp[i] < m){
+            m = inp[i];
+        }
+    }
+    return m;
+}
 
-std::vector<long double> normalize(std::vector<long double> in){
+// НОРМАЛИЗАЦИЯ ДАННЫХ
+std::vector<long double> minmax(std::vector<long double> in){
     std::vector<long double> inp = in;
     long double maximum = maxElem(inp);
+    long double minimum = minElem(inp);
     for (int i = 0; i < inp.size(); i++){
-        inp[i] = inp[i] / maximum;
+        inp[i] = (inp[i] - minimum) / (maximum - minimum);
     }
     return inp;
 }
 
-void dataformat(std::vector<std::vector<long double>> &px){
-    for (int i = 0; i < px.size(); i++){
-        
-    }
-}
-
-// std::vector<std::vector<long double>>& readfile(std::string file_name){
-std::string readfile(std::string file_name){
-    std::vector<std::vector<long double>> matr;
+// ФУНКЦИЯ ДЛЯ ЧТЕНИЯ ФАЙЛОВ И ПРЕОБРАЗОВАНИЯ В МАТРИЦУ
+void readfile(std::string file_name, int input_shape, int output_shape, std::vector<std::vector<long double>> &inRef, std::vector<std::vector<long double>> &outRef){
     std::ifstream file;
+    long double curr;
     file.open(file_name);
-    std::string mystring;
     if(!file){
-        print(file_name);
-        return "d";
+        print("ERRor");
+        std::exit(200);
     }
-    file >> mystring;
-    std::cout << mystring;
-    return mystring;
+    while (!file.eof()){
+        std::vector<long double> vect;
+        for (int i = 0; i < input_shape; i++) {
+            file >> curr;
+            vect.push_back(curr);
+            long double curr;
+        }
+        
+        inRef.push_back(vect);
+        vect.clear();
+        for (int i = 0; i < output_shape; i++) {
+            file >> curr;
+            vect.push_back(curr);
+            long double curr = 0;
+        }
+        outRef.push_back(vect);
+        vect.clear();
+    }
 }
 
+// ВЫСЧИТЫВАНИЕ ОШИБКИ ПО ОДНОМУ ОБУЧАЮЩЕМУ ПРИМЕРУ
+long double errorCalc(std::vector<long double> res, std::vector<long double> true_val){
+    long double error = 0;
+    for (int i = 0; i < res.size(); i++){
+        error += pow((res[i] - true_val[i]), 2);
+    }
+    return 0.5 * error;
+}
 
+// ШАБЛОН ФУНКЦИИ ДЛЯ УДОБНОГО ВЫВОДА В КОНСОЛЬ
 template <typename T>
 void print(T a, std::string end){
-    std::cout << a << std::endl;
+    std::cout << a << end;
 }
 
 // main
 
 int main()
 {
+    // ИНИЦИАЛИЗАЦИЯ ПЕРЕМЕННЫХ
     std::string p = __FILE__;
     std::string path = "";
+    std::string filename;
+    std::vector<std::vector<long double>> input_matrix;
+    std::vector<std::vector<long double>> output_matrix;
+    int input_shape, output_shape;
+
+    // ВВОД ДАННЫХ ИЗ КОНСОЛИ
+    std::cin >> input_shape;
+    std::cin >> output_shape;
+    std::cin >> filename;
+    
+    // АБСОЛЮТНЫЙ ПУТЬ ДО ДИРЕКТОРИИ ИСПОЛНЕМОГО ФАЙЛА
     for (int i = 0; i < p.size() - 8; i++) {
         path += p[i];
     }
-    std::string filename = "input_train.txt";
-    std::string mystring = readfile(path + "data/" + filename);
-    std::cout << mystring;
-    // Model h(20, 1);
-    // h.addLayer(1);
-    // h.getShape();
-    // h.buildModel();
-    // h.forwardPass({1});
+    
+    // ПРЕОБРАЗОВАНИЕ TXT ФАЙЛА В МАТРИЦЫ ВХОДНЫХ ДАННЫХ И ОТВЕТОВ
+    readfile(path + "data/" + filename, input_shape, output_shape, input_matrix, output_matrix);
+    
+    Model model(input_shape, output_shape);
+    model.addLayer(5);
+    model.addLayer(1);
+    model.buildModel();
+    long double a = model.trainModel(input_matrix, output_matrix, 2);
+    print(a);
     return 0;
 }
