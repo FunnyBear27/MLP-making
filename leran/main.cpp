@@ -9,8 +9,8 @@
 
 // Прототипы
 void readfile(std::string file_name, int input_shape, int output_shape, std::vector<long double>);
-std::vector<long double> minmax(std::vector<long double> in);
-long double maxElem(std::vector<long double> inp);
+void minmax(std::vector<long double> &in);
+long double maxElem(std::vector<long double> &inp);
 template <typename T>
 void print(T a, std::string end = "\n");
 long double errorCalc(std::vector<long double> res, std::vector<long double> true_val);
@@ -23,13 +23,13 @@ protected:
     long double value;
 
 public:
+
+    // КОНСТРУКТОР КЛАССА
     Neuron(std::vector<long double> input_weights){
         in_weights = input_weights;
-//        for (int i = 0; i < in_weights.size(); i++) {
-//        }
-//        std::cout << "\n\n";
     }
     
+    // ВЗВЕШЕННАЯ СУММА
     long double countValue(std::vector<long double> in){
         inp = in;
         value = 0;
@@ -40,6 +40,7 @@ public:
         return value;
     }
     
+    // ЛОГИСТИЧЕСКАЯ ФУНКЦИЯ АКТИВАЦИИ
     inline long double actFunction(long double x){
         return (1 / (1 + exp(-x)));
     }
@@ -52,10 +53,13 @@ class OutputNeurons{
     std::vector<long double> inp;
     
 public:
+
+    // КОНСТРУКТОР КЛАССА
     OutputNeurons(std::vector<long double> input_weights){
         in_weights = input_weights;
     }
     
+    // ВЗВЕШЕННАЯ СУММА
     long double countValue(std::vector<long double> in){
         inp = in;
         value = 0;
@@ -74,12 +78,15 @@ private:
     int in_shape, out_shape, curr_in;
 
 public:
+
+    // КОНСТРУКТОР КЛАССА
     Model(int size_input, int size_output){
         in_shape = size_input;
         out_shape = size_output;
         curr_in = size_input;
     }
     
+    // ДОБАВЛЕНИЕ СЛОЯ НЕЙРОНОВ
     void addLayer(int neuron_amount, std::string activation_func = "logistic"){
         std::vector<Neuron> neurons;
         std::vector<long double> weights;
@@ -97,6 +104,7 @@ public:
 //        std::cout << "Added " << neuron_amount << " Neurons as layer " << layers_vect.size() << "!" << std::endl;
     }
 
+    // ОКОНЧАТЕЛЬНАЯ СБОРКА МОДЕЛИ
     void buildModel(){
         std::vector<long double> weights;
         for (int j = 0; j < out_shape; j++) {
@@ -108,27 +116,28 @@ public:
         }
     }
     
+    // ОСНОВНОЙ МЕТОД КЛАССА
     long double trainModel(std::vector <std::vector<long double>> &input_vectors, std::vector <std::vector<long double>> &output_vectors, int epochs, bool show_progress = false){
         long double error;
         for(int epoch = 0; epoch < epochs; epoch++){
-            std::vector<long double> errors;
+            long double errors = 0;
             for (int i = 0; i < output_vectors.size(); i++){
                 std::vector<long double> res = forwardPass(input_vectors[i]);
                 error = errorCalc(res, output_vectors[i]);
-                errors.push_back(error);
-                std::cout << res[0] << "\t" << output_vectors[i][0] << "\n";
+                errors += error;
             }
-            std::cout << "\n";
+            print(errors / (output_vectors.size() * out_shape));
         }
         return 992.23;
     }
     
-    std::vector<long double> forwardPass(std::vector<long double> input_values){
-        std::vector<long double> input = minmax(input_values);
+    // FORWARD PROPOGATION
+    std::vector<long double> forwardPass(std::vector<long double> input){
+
         std::vector<long double> curr_input = input;
-        
+        std::vector<long double> new_input;
+
         for (int layer = 0; layer < layers_vect.size(); layer++) {
-            std::vector<long double> new_input;
             for (int n = 0; n < layers_vect[layer].size(); n++) {
                 new_input.push_back(layers_vect[layer][n].countValue(curr_input));
             }
@@ -142,14 +151,15 @@ public:
         return result;
     }
     
+    // ВЫВОДИТ В КОНСОЛЬ РАЗМЕР ВХОДНЫХ И ВЫХОДНЫХ НЕЙРОНОВ
     void getShape(){
         std::cout << "Input: " << in_shape << "\nOutput: " << out_shape << "\n";
     }
 };
 
 // Функции
-
-long double maxElem(std::vector<long double> inp){
+// ФУНКЦИЯ МАКСИМУМА
+long double maxElem(std::vector<long double> &inp){
     long double m = inp[0];
     for (int i = 1; i < (inp.size()); i++){
         if (inp[i] > m){
@@ -159,7 +169,8 @@ long double maxElem(std::vector<long double> inp){
     return m;
 }
 
-long double minElem(std::vector<long double> inp){
+// ФУНКЦИЯ МИНИМУМА
+long double minElem(std::vector<long double> &inp){
     long double m = inp[0];
     for (int i = 1; i < (inp.size()); i++){
         if (inp[i] < m){
@@ -170,14 +181,47 @@ long double minElem(std::vector<long double> inp){
 }
 
 // НОРМАЛИЗАЦИЯ ДАННЫХ
-std::vector<long double> minmax(std::vector<long double> in){
-    std::vector<long double> inp = in;
+void minmax(std::vector<long double> &inp){
     long double maximum = maxElem(inp);
     long double minimum = minElem(inp);
     for (int i = 0; i < inp.size(); i++){
         inp[i] = (inp[i] - minimum) / (maximum - minimum);
     }
-    return inp;
+}
+
+long double maxElem(std::vector<std::vector<long double>> &inp){
+    long double m = inp[0][0];
+    for (int i = 0; i < (inp.size()); i++){
+        for (int j = 0; j < inp[0].size(); j++){
+            if (inp[i][j] > m){
+                m = inp[i][j];
+            }
+        }
+    }
+    return m;
+}
+
+// ФУНКЦИЯ МИНИМУМА
+long double minElem(std::vector<std::vector<long double>> &inp){
+    long double m = inp[0][0];
+    for (int i = 0; i < (inp.size()); i++){
+        for (int j = 0; j < inp[0].size(); j++){
+            if (inp[i][j] < m){
+                m = inp[i][j];
+            }
+        }
+    }
+    return m;
+}
+
+void minmax(std::vector<std::vector<long double>> &inp, long double &maximum, long double &minimum){
+    maximum = maxElem(inp);
+    minimum = minElem(inp);
+    for (int i = 0; i < inp.size(); i++){
+        for (int j = 0; j < inp[0].size(); j++){
+            inp[i][j] = (inp[i][j] - minimum) / (maximum - minimum);
+        }
+    }
 }
 
 // ФУНКЦИЯ ДЛЯ ЧТЕНИЯ ФАЙЛОВ И ПРЕОБРАЗОВАНИЯ В МАТРИЦУ
@@ -196,7 +240,7 @@ void readfile(std::string file_name, int input_shape, int output_shape, std::vec
             vect.push_back(curr);
             long double curr;
         }
-        
+        minmax(vect);
         inRef.push_back(vect);
         vect.clear();
         for (int i = 0; i < output_shape; i++) {
@@ -224,7 +268,7 @@ void print(T a, std::string end){
     std::cout << a << end;
 }
 
-// main
+// ГЛАВНАЯ ФУНКЦИЯ
 
 int main()
 {
@@ -234,6 +278,7 @@ int main()
     std::string filename;
     std::vector<std::vector<long double>> input_matrix;
     std::vector<std::vector<long double>> output_matrix;
+    long double out_max, out_min;
     int input_shape, output_shape;
 
     // ВВОД ДАННЫХ ИЗ КОНСОЛИ
@@ -248,11 +293,14 @@ int main()
     
     // ПРЕОБРАЗОВАНИЕ TXT ФАЙЛА В МАТРИЦЫ ВХОДНЫХ ДАННЫХ И ОТВЕТОВ
     readfile(path + "data/" + filename, input_shape, output_shape, input_matrix, output_matrix);
-    
+    minmax(output_matrix, out_max, out_min);
+    // СОЗДАНИЕ МОДЕЛИ
     Model model(input_shape, output_shape);
     model.addLayer(5);
-    model.addLayer(1);
+    model.addLayer(5);
     model.buildModel();
+
+    // ОБУЧЕНИЕ МОДЕЛИ
     long double a = model.trainModel(input_matrix, output_matrix, 2);
     print(a);
     return 0;
