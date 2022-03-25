@@ -1,25 +1,4 @@
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <math.h>
-#include <cmath>
-#include <ctime>
-#include <fstream>
-
-
-// Прототипы
-void readfile(std::string file_name, int input_shape, int output_shape, std::vector<std::vector<long double>> &inRef, std::vector<std::vector<long double>> &outRef);
-
-void minmax(std::vector<std::vector<long double>> &inp, long double &maximum, long double &minimum);
-void minmax(std::vector<long double> &in);
-long double maxElem(std::vector<std::vector<long double>> &inp);
-long double maxElem(std::vector<long double> &inp);
-long double minElem(std::vector<std::vector<long double>> &inp);
-long double minElem(std::vector<long double> &inp);
-
-long double errorCalc(std::vector<long double> res, std::vector<long double> true_val);
-template <typename T>
-void print(T a, std::string end = "\n");
+#include "funcs.hpp"
 
 // Классы
 class Neuron{
@@ -107,7 +86,7 @@ public:
         }
         layers_vect.push_back(neurons);
         curr_in = neuron_amount;
-//        std::cout << "Added " << neuron_amount << " Neurons as layer " << layers_vect.size() << "!" << std::endl;
+        std::cout << "Added " << neuron_amount << " Neurons as layer " << layers_vect.size() << "!" << std::endl;
     }
 
     // ОКОНЧАТЕЛЬНАЯ СБОРКА МОДЕЛИ
@@ -125,6 +104,7 @@ public:
     // ОСНОВНОЙ МЕТОД КЛАССА
     long double trainModel(std::vector <std::vector<long double>> &input_vectors, std::vector <std::vector<long double>> &output_vectors, int epochs, bool show_progress = false){
         long double error;
+        long double errors;
         for(int epoch = 0; epoch < epochs; epoch++){
             long double errors = 0;
             for (int i = 0; i < output_vectors.size(); i++){
@@ -132,9 +112,9 @@ public:
                 error = errorCalc(res, output_vectors[i]);
                 errors += error;
             }
-            print(errors / (output_vectors.size() * out_shape));
+            std::cout << (errors / (output_vectors.size() * out_shape)) << "\n";
         }
-        return 992.23;
+        return error;
     }
     
     // FORWARD PROPOGATION
@@ -162,117 +142,6 @@ public:
         std::cout << "Input: " << in_shape << "\nOutput: " << out_shape << "\n";
     }
 };
-
-// Функции
-// ФУНКЦИЯ МАКСИМУМА
-long double maxElem(std::vector<long double> &inp){
-    long double m = inp[0];
-    for (int i = 1; i < (inp.size()); i++){
-        if (inp[i] > m){
-            m = inp[i];
-        }
-    }
-    return m;
-}
-
-// ФУНКЦИЯ МИНИМУМА
-long double minElem(std::vector<long double> &inp){
-    long double m = inp[0];
-    for (int i = 1; i < (inp.size()); i++){
-        if (inp[i] < m){
-            m = inp[i];
-        }
-    }
-    return m;
-}
-
-// НОРМАЛИЗАЦИЯ ДАННЫХ
-void minmax(std::vector<long double> &inp){
-    long double maximum = maxElem(inp);
-    long double minimum = minElem(inp);
-    for (int i = 0; i < inp.size(); i++){
-        inp[i] = (inp[i] - minimum) / (maximum - minimum);
-    }
-}
-
-long double maxElem(std::vector<std::vector<long double>> &inp){
-    long double m = inp[0][0];
-    for (int i = 0; i < (inp.size()); i++){
-        for (int j = 0; j < inp[0].size(); j++){
-            if (inp[i][j] > m){
-                m = inp[i][j];
-            }
-        }
-    }
-    return m;
-}
-
-// ФУНКЦИЯ МИНИМУМА
-long double minElem(std::vector<std::vector<long double>> &inp){
-    long double m = inp[0][0];
-    for (int i = 0; i < (inp.size()); i++){
-        for (int j = 0; j < inp[0].size(); j++){
-            if (inp[i][j] < m){
-                m = inp[i][j];
-            }
-        }
-    }
-    return m;
-}
-
-void minmax(std::vector<std::vector<long double>> &inp, long double &maximum, long double &minimum){
-    maximum = maxElem(inp);
-    minimum = minElem(inp);
-    for (int i = 0; i < inp.size(); i++){
-        for (int j = 0; j < inp[0].size(); j++){
-            inp[i][j] = (inp[i][j] - minimum) / (maximum - minimum);
-        }
-    }
-}
-
-// ФУНКЦИЯ ДЛЯ ЧТЕНИЯ ФАЙЛОВ И ПРЕОБРАЗОВАНИЯ В МАТРИЦУ
-void readfile(std::string file_name, int input_shape, int output_shape, std::vector<std::vector<long double>> &inRef, std::vector<std::vector<long double>> &outRef){
-    std::ifstream file;
-    long double curr;
-    file.open(file_name);
-    if(!file){
-        print("ERRor");
-        std::exit(200);
-    }
-    while (!file.eof()){
-        std::vector<long double> vect;
-        for (int i = 0; i < input_shape; i++) {
-            file >> curr;
-            vect.push_back(curr);
-            long double curr;
-        }
-        minmax(vect);
-        inRef.push_back(vect);
-        vect.clear();
-        for (int i = 0; i < output_shape; i++) {
-            file >> curr;
-            vect.push_back(curr);
-            long double curr = 0;
-        }
-        outRef.push_back(vect);
-        vect.clear();
-    }
-}
-
-// ВЫСЧИТЫВАНИЕ ОШИБКИ ПО ОДНОМУ ОБУЧАЮЩЕМУ ПРИМЕРУ
-long double errorCalc(std::vector<long double> res, std::vector<long double> true_val){
-    long double error = 0;
-    for (int i = 0; i < res.size(); i++){
-        error += pow((res[i] - true_val[i]), 2);
-    }
-    return 0.5 * error;
-}
-
-// ШАБЛОН ФУНКЦИИ ДЛЯ УДОБНОГО ВЫВОДА В КОНСОЛЬ
-template <typename T>
-void print(T a, std::string end){
-    std::cout << a << end;
-}
 
 // ГЛАВНАЯ ФУНКЦИЯ
 
@@ -308,6 +177,6 @@ int main()
 
     // ОБУЧЕНИЕ МОДЕЛИ
     long double a = model.trainModel(input_matrix, output_matrix, 2);
-    print(a);
+    std::cout << a * (out_max - out_min) + out_min << "\n";
     return 0;
 }
