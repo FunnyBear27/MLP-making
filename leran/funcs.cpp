@@ -6,19 +6,6 @@
 //
 
 #include "funcs.hpp"
-
-void readfile(std::string file_name, int input_shape, int output_shape, std::vector<std::vector<long double>> &inRef, std::vector<std::vector<long double>> &outRef);
-
-void minmax(std::vector<std::vector<long double>> &inp, long double &maximum, long double &minimum);
-void minmax(std::vector<long double> &in);
-long double maxElem(std::vector<std::vector<long double>> const &inp);
-long double maxElem(std::vector<long double> const &inp);
-long double minElem(std::vector<std::vector<long double>> const &inp);
-long double minElem(std::vector<long double> const &inp);
-long double errorCalc(std::vector<long double> res, std::vector<long double> true_val);
-
-
-
 // Функции
 // ФУНКЦИЯ МАКСИМУМА
 long double maxElem(std::vector<long double> const &inp){
@@ -116,10 +103,15 @@ void readfile(std::string file_name, int input_shape, int output_shape, std::vec
 }
 
 // ВЫСЧИТЫВАНИЕ ОШИБКИ ПО ОДНОМУ ОБУЧАЮЩЕМУ ПРИМЕРУ
-long double errorCalc(std::vector<long double> res, std::vector<long double> true_val){
-    long double error = 0;
-    for (int i = 0; i < res.size(); i++){
-        error += pow((res[i] - true_val[i]), 2);
+std::vector<long double> errorCalc(std::vector<std::vector<long double>> &res, std::vector<std::vector<long double>> const &true_val){
+    std::vector<long double> ans;
+    long double curr_neuron_mean = 0;
+    for (int i = 0; i < res[0].size(); i++){
+        for (int j = 0; j < res.size(); j++){
+           curr_neuron_mean += pow((res[j][i] -  true_val[j][i]), 2);
+        }
+        ans.push_back(curr_neuron_mean / res.size());
+        curr_neuron_mean = 0;
     }
-    return 0.5 * error;
+    return ans;
 }

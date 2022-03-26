@@ -102,19 +102,16 @@ public:
     }
     
     // ОСНОВНОЙ МЕТОД КЛАССА
-    long double trainModel(std::vector <std::vector<long double>> &input_vectors, std::vector <std::vector<long double>> &output_vectors, int epochs, bool show_progress = false){
-        long double error;
-        long double errors;
+    void trainModel(std::vector <std::vector<long double>> &input_vectors, std::vector <std::vector<long double>> &output_vectors, int epochs, bool show_progress = false){
+        std::vector<long double> errors;
+        std::vector<std::vector<long double>> res;
         for(int epoch = 0; epoch < epochs; epoch++){
-            long double errors = 0;
             for (int i = 0; i < output_vectors.size(); i++){
-                std::vector<long double> res = forwardPass(input_vectors[i]);
-                error = errorCalc(res, output_vectors[i]);
-                errors += error;
+                 res.push_back(forwardPass(input_vectors[i]));
             }
-            std::cout << (errors / (output_vectors.size() * out_shape)) << "\n";
+            errors = errorCalc(res, output_vectors);
+            std::cout << errors[0] << "\t" << errors.size() << "\n";
         }
-        return error;
     }
     
     // FORWARD PROPOGATION
@@ -135,11 +132,6 @@ public:
             result.push_back(output_layer[n].countValue(curr_input));
         }
         return result;
-    }
-    
-    // ВЫВОДИТ В КОНСОЛЬ РАЗМЕР ВХОДНЫХ И ВЫХОДНЫХ НЕЙРОНОВ
-    void getShape(){
-        std::cout << "Input: " << in_shape << "\nOutput: " << out_shape << "\n";
     }
 };
 
@@ -176,7 +168,6 @@ int main()
     model.buildModel();
 
     // ОБУЧЕНИЕ МОДЕЛИ
-    long double a = model.trainModel(input_matrix, output_matrix, 2);
-    std::cout << a * (out_max - out_min) + out_min << "\n";
+    model.trainModel(input_matrix, output_matrix, 2);
     return 0;
 }
