@@ -2,12 +2,10 @@
 
 // Классы
 class Neuron{
-protected:
+public:
     std::vector<long double> in_weights;
     std::vector<long double> inp;
     long double value;
-
-public:
 
     // КОНСТРУКТОР КЛАССА
     Neuron(std::vector<long double> input_weights){
@@ -33,12 +31,12 @@ public:
 
 
 class OutputNeurons{
+    
+public:
     long double value;
     std::vector<long double> in_weights;
     std::vector<long double> inp;
     
-public:
-
     // КОНСТРУКТОР КЛАССА
     OutputNeurons(std::vector<long double> input_weights){
         in_weights = input_weights;
@@ -104,13 +102,18 @@ public:
     // ОСНОВНОЙ МЕТОД КЛАССА
     void trainModel(std::vector <std::vector<long double>> &input_vectors, std::vector <std::vector<long double>> &output_vectors, int epochs, bool show_progress = false){
         std::vector<long double> errors;
+        long double total_error = 0;
         std::vector<std::vector<long double>> res;
         for(int epoch = 0; epoch < epochs; epoch++){
             for (int i = 0; i < output_vectors.size(); i++){
                  res.push_back(forwardPass(input_vectors[i]));
             }
             errors = errorCalc(res, output_vectors);
+            for(int i = 0; i < errors.size(); i++){
+                total_error += errors[i];
+            }
             std::cout << errors[0] << "\t" << errors.size() << "\n";
+            res.clear();
         }
     }
     
@@ -132,6 +135,21 @@ public:
             result.push_back(output_layer[n].countValue(curr_input));
         }
         return result;
+    }
+    
+    void backPass(std::vector<long double> outputs, std::vector<long double> true_val){
+        std::vector<Neuron> &layerRef = layers_vect[layers_vect.size() - 1];
+        std::vector<std::vector<long double>> new_weights;
+        for (int i = 0; i < output_layer.size(); i++){
+            new_weights.push_back(output_layer[i].in_weights);
+        }
+        for (int i = 0; i < output_layer.size(); i++){
+            for (int j = 0; j < output_layer[i].in_weights.size(); j++){
+                long double delta = -(true_val[i] - outputs[i]) * outputs[i] * (1 - outputs[i]);
+                long double correcting = -delta * layerRef[j].value;
+                new_weights[i][j] -= ETA * correcting;
+            }
+        }
     }
 };
 

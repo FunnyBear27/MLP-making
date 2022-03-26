@@ -102,16 +102,20 @@ void readfile(std::string file_name, int input_shape, int output_shape, std::vec
     }
 }
 
-// ВЫСЧИТЫВАНИЕ ОШИБКИ ПО ОДНОМУ ОБУЧАЮЩЕМУ ПРИМЕРУ
+// ВЫСЧИТЫВАНИЕ ОШИБКИ ПО ВСЕМ ОБУЧАЮЩИМ ПРИМЕРАМ
 std::vector<long double> errorCalc(std::vector<std::vector<long double>> &res, std::vector<std::vector<long double>> const &true_val){
     std::vector<long double> ans;
     long double curr_neuron_mean = 0;
     for (int i = 0; i < res[0].size(); i++){
         for (int j = 0; j < res.size(); j++){
-           curr_neuron_mean += pow((res[j][i] -  true_val[j][i]), 2);
+           curr_neuron_mean += 0.5 * pow((res[j][i] - true_val[j][i]), 2);
         }
         ans.push_back(curr_neuron_mean / res.size());
         curr_neuron_mean = 0;
     }
     return ans;
+}
+
+long double derivative(long double output){
+    return output * (1 - output);
 }
