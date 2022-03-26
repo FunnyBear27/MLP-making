@@ -19,6 +19,5 @@ long double maxElem(std::vector<long double> const &inp);
 long double minElem(std::vector<std::vector<long double>> const &inp);
 long double minElem(std::vector<long double> const &inp);
 
-long double errorCalc(std::vector<long double> res, std::vector<long double> true_val);
-
+std::vector<long double> errorCalc(std::vector<std::vector<long double>> &res, std::vector<std::vector<long double>> const &true_val){
 #endif /* funcs_hpp */
